@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: API Product V1
+  description: Permite crear, actualizar, eliminar, listar, buscar productos y obtener estadiscticas de los productos
+  version: 1.0.0
+servers:
+- url: /agendapro/v1
+security:
+  - basicAuth: []
+tags:
+  - name: producto
+    description: Permite crear, actualizar, eliminar, listar y buscar productos
+  - name: estadisticas
+    description: Permite obtener estadisticas de los productos
+paths:
+  /products:
+    get:
+      tags:
+      - producto
+      summary: Listar los productos
+      operationId: listProducts
+      parameters:
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/offsetParam'
+      responses:
+        '200':
+          description: operación satisfactoria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+    post:
+      tags:
+        - producto
+      summary: agregar un nuevo producto
+      operationId: addProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        required: true
+      responses:
+        '200':
+          description: operación satisfactoria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+  /products/search:
+    get:
+      tags:
+        - producto
+      summary: Buscar los productos por nombre
+      operationId: searchProducts
+      parameters:
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/nameParam'
+      responses:
+        '200':
+          description: operación satisfactoria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+  /products/{productId}:
+    get:
+      tags:
+        - producto
+      summary: buscar un producto por id
+      operationId: getProduct
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      responses:
+        '200':
+          description: operación satisfactoria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+    put:
+      tags:
+        - producto
+      summary: actualizar un producto por id
+      operationId: updateProduct
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        required: true
+      responses:
+        '200':
+          description: operación satisfactoria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+    delete:
+      tags:
+        - producto
+      summary: eliminar un producto por id
+      operationId: deleteProduct
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      responses:
+        '200':
+          description: operación satisfactoria
+  /products/statistics/categories:
+    get:
+      tags:
+        - estadisticas
+      summary: Obtiene las estadisticas de los productos por categoria
+      operationId: getstatisticsCategories
+      responses:
+        '200':
+          description: operación satisfactoria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StatisticsCategoryResponse'
+      security:
+        - basicAuth: []
+components:
+  parameters:
+    limitParam:
+      name: limit
+      in: query
+      description: Cantidad máxima de registros a traer
+      required: true
+      schema:
+        type: integer
+    offsetParam:
+      name: offset
+      in: query
+      description: Cantidad de registros que serán exonerados de la consulta
+      required: true
+      schema:
+        type: integer
+    productIdParam:
+      name: productId
+      in: path
+      description: Id del producto a retornar
+      required: true
+      schema:
+        type: integer
+        format: int64
+    nameParam:
+      name: name
+      in: query
+      description: nombre del producto a buscar
+      required: true
+      schema:
+        type: string
+  schemas:
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: id del producto
+          format: int64
+          example: 10
+        name:
+          type: string
+          description: nombre del producto
+          example: Poco X5
+        description:
+          type: string
+          description: descripción del producto
+          example: Smartphone Poco X5 Xiaomi
+        category:
+          type: string
+          description: categoria del producto
+          example: smartphone
+        stock:
+          type: integer
+          description: stock del producto
+          format: int32
+          example: 6
+        price:
+          type: number
+          description: precio del producto
+          format: double
+          example: 788.99
+    ProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: nombre del producto
+          example: Poco X5
+        description:
+          type: string
+          description: descripción del producto
+          example: Smartphone Poco X5 Xiaomi
+        category:
+          type: string
+          description: categoria del producto
+          example: smartphone
+        stock:
+          type: integer
+          description: stock del producto
+          format: int32
+          example: 6
+        price:
+          type: number
+          description: precio del producto
+          format: double
+          example: 788.99
+    StatisticsCategoryResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: categoria del producto
+          example: smartphone
+        quantityProducts:
+          type: integer
+          description: stock del producto
+          format: int32
+          example: 6
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

@@ -1,0 +1,25 @@
+spring:
+  main:
+    banner-mode: "off"
+  r2dbc:
+    url: "r2dbc:postgres://localhost:5432/product_agendapro"
+    username: "${DATABASE_USERNAME:admin}"
+    password: "${DATABASE_PASSWORD:admin}"
+    pool:
+      initial-size: 2
+      max-size: 10
+      max-idle-time: 1m
+  security:
+    user:
+      name: agendapro
+      password: agendapro
+server:
+  servlet:
+    encoding:
+      charset: "UTF-8"
+  port: 8085
+
+logging:
+  level:
+    io.r2dbc.postgresql.QUERY: DEBUG # for queries
+    io.r2dbc.postgresql.PARAM: DEBUG # for parameters
