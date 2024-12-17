@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  app:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres-db
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgres://postgres-db:5432/product_agendapro
+      SPRING_R2DBC_USERNAME: root
+      SPRING_R2DBC_PASSWORD: root
+  postgres-db:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: product_agendapro
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - product_agendapro:/var/lib/postgresql/data
+
+volumes:
+  product_agendapro:
